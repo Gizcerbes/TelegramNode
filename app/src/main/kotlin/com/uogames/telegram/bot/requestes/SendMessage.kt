@@ -10,17 +10,22 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 object SendMessage {
 
-    private val method = "sendMessage"
+    private const val METHOD = "sendMessage"
 
 
     suspend fun BotClient.sendMessage(update: Update? = null, message: String): Request<Message> {
-        return respond(update, method) {
-            parameter("chat_id", update?.message?.chat?.id)
-            parameter("text", message)
-            parameter("parse_mode", "MarkdownV2")
+        return respond(update, METHOD) {
+            contentType(ContentType.Application.Json)
+            setBody(buildJsonObject {
+                put("chat_id",  update?.message?.chat?.id)
+                put("text", message)
+                put("parse_mode", "MarkdownV2")
+            })
         }.apply {
             if (this.status != HttpStatusCode.OK) {
                 println(this)
@@ -30,9 +35,12 @@ object SendMessage {
     }
 
     suspend fun BotClient.sendMessage(chatID: Long, message: String): Request<Message> {
-        return respond(null, method) {
-            parameter("chat_id", chatID)
-            parameter("text", message)
+        return respond(null, METHOD) {
+            contentType(ContentType.Application.Json)
+            setBody(buildJsonObject {
+                put("chat_id",  chatID)
+                put("text", message)
+            })
         }.body()
     }
 
