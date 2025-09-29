@@ -8,7 +8,10 @@ import com.uogames.telegram.bot.responses.Update
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 object SendDocument {
 
@@ -36,6 +39,36 @@ object SendDocument {
         filename: String,
     ): Request<Message> {
         return bot.sendDocument(update, file, filename)
+    }
+
+    suspend fun BotClient.sendDocument(
+        chatID: Long,
+        file: ByteArray,
+        filename: String
+    ) :Request<Message>{
+        return respond(null, METHOD) {
+            contentType(ContentType.MultiPart.FormData)
+            setBody(MultiPartFormDataContent(formData {
+                append("chat_id", chatID)
+                append("document", file, Headers.build {
+                    append(HttpHeaders.ContentType, ContentType.Image.Any.toString())
+                    append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
+                })
+            }))
+        }.body()
+    }
+
+    suspend fun BotClient.sendDocument(
+        chatID: Long,
+        fileID: String
+    ): Request<Message>{
+        return respond(null, METHOD){
+            contentType(ContentType.Application.Json)
+            setBody(buildJsonObject {
+                put("chat_id", chatID)
+                put("document", fileID)
+            })
+        }.body()
     }
 
 

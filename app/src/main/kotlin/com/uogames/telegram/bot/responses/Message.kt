@@ -34,8 +34,7 @@ data class Message(
 
 
 
-    @SerialName("text")
-    val text: String?,
-    @SerialName("entities")
-    val entities: List<MessageEntity> = emptyList()
+    @SerialName("text") val text: String? = null,
+    @SerialName("entities") val entities: List<MessageEntity> = emptyList(),
+    @SerialName("document") val document: Document? = null
 )

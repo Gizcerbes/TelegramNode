@@ -46,7 +46,6 @@
     }
 ```
 
-
 ### Variant
 ```kotlin
 fun main() = runBlocking {
