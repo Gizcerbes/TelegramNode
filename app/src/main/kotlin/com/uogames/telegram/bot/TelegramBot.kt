@@ -47,12 +47,10 @@ class TelegramBot(
                     scope.launch { looper?.let { runCatching { it() }.onFailure { println(it) } } }
                     r.result.forEach { scope.launch { runCatching { receiver(it) }.onFailure { println(it) } } }
                     latestID = r.result.lastOrNull()?.updateID ?: latestID
-                    delay(1_000)
                 }.onFailure {
                     println("Bot Exception $it")
-                    delay(1_000)
                 }
-
+                delay(1_000)
             }
         }
     }

@@ -34,19 +34,14 @@ object SendDocument {
         }.body()
     }
 
-    suspend fun Node.sendDocument(
-        file: ByteArray,
-        filename: String,
-    ): Request<Message> {
-        return bot.sendDocument(update, file, filename)
-    }
 
     suspend fun BotClient.sendDocument(
         chatID: Long,
         file: ByteArray,
-        filename: String
-    ) :Request<Message>{
-        return respond(null, METHOD) {
+        filename: String,
+        update: Update? = null
+    ): Request<Message> {
+        return respond(update, METHOD) {
             contentType(ContentType.MultiPart.FormData)
             setBody(MultiPartFormDataContent(formData {
                 append("chat_id", chatID)
@@ -60,15 +55,29 @@ object SendDocument {
 
     suspend fun BotClient.sendDocument(
         chatID: Long,
-        fileID: String
-    ): Request<Message>{
-        return respond(null, METHOD){
+        fileID: String,
+        update: Update? = null
+    ): Request<Message> {
+        return respond(update, METHOD) {
             contentType(ContentType.Application.Json)
             setBody(buildJsonObject {
                 put("chat_id", chatID)
                 put("document", fileID)
             })
         }.body()
+    }
+
+    suspend fun Node.sendDocument(
+        file: ByteArray,
+        filename: String,
+    ): Request<Message> {
+        return bot.sendDocument(update, file, filename)
+    }
+
+    suspend fun Node.sendDocument(
+        fileID: String,
+    ): Request<Message> {
+        return this.bot.sendDocument(this.chatID, fileID, update)
     }
 
 
